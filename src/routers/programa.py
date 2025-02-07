@@ -5,7 +5,7 @@ from src import models
 from src.utils import get_session, get_paginated_data
 from src.schemas import PaginatedResponseTemplate, PaginatedProgramaResponse
 from datetime import date
-from typing import Optional, Literal
+from typing import Optional
 from appconfig import Settings
 from src.cache import cache
 
@@ -94,5 +94,5 @@ async def consulta_programa_ted(
     
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail=f"Erro ao consultar Plano de Trabalho: {e.__repr__()}")
+                            detail=config.ERROR_MESSAGE_INTERNAL)
                             #detail=config.ERROR_MESSAGE_INTERNAL

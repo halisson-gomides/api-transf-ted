@@ -16,9 +16,9 @@ from src.cache import setup_cache
 
 # Importando Rotas
 from src.routers.programa import pg_router
-# from src.routers.plano_acao_especial import pa_router
-# from src.routers.empenho_especial import em_router
-# from src.routers.documento_habil import dh_router
+from src.routers.programa_beneficiario import pgb_router
+from src.routers.programa_acao_orcamentaria import pgao_router
+from src.routers.plano_acao import pa_router
 # from src.routers.ordem_pagamento_especial import op_router
 # from src.routers.historico_pagamento_especial import hist_router
 # from src.routers.relatorio_gestao_especial import rg_router
@@ -70,9 +70,9 @@ app.add_middleware(CacheRequestControlMiddleware)
 
 # Incluindo Rotas
 app.include_router(pg_router)
-# app.include_router(pa_router)
-# app.include_router(em_router)
-# app.include_router(dh_router)
+app.include_router(pgb_router)
+app.include_router(pgao_router)
+app.include_router(pa_router)
 # app.include_router(op_router)
 # app.include_router(hist_router)
 # app.include_router(rg_router)

@@ -44,7 +44,7 @@ class PlanoAcao(BaseModel, table=True):
     __tablename__ = "plano_acao"
     
     id_plano_acao: int = Field(primary_key=True)
-    id_programa: int
+    id_programa: int = Field(foreign_key=f"{db_schema}.programa.id_programa", primary_key=True)
     sigla_unidade_descentralizada: str
     unidade_descentralizada: str
     sigla_unidade_responsavel_execucao: str
@@ -69,7 +69,7 @@ class PlanoAcaoAnalise(BaseModel, table=True):
     __tablename__ = "plano_acao_analise"
     
     id_plano_acao: int = Field(primary_key=True)
-    id_analise: int
+    id_analise: int = Field(primary_key=True)
     tx_justificativa_analise: str
     resultado_analise: str
     tx_situacao_analise: str
@@ -79,7 +79,7 @@ class PlanoAcaoEtapa(BaseModel, table=True):
     __tablename__ = "plano_acao_etapa"
     
     id_etapa: int = Field(primary_key=True)
-    id_meta: int
+    id_meta: int = Field(primary_key=True)
     nr_numero_etapa: int
     tx_nome_etapa: str
     tx_descricao_etapa: str
@@ -94,7 +94,7 @@ class PlanoAcaoMeta(BaseModel, table=True):
     __tablename__ = "plano_acao_meta"
     
     id_plano_acao: int = Field(primary_key=True)
-    id_meta: int
+    id_meta: int = Field(primary_key=True)
     nr_numero_meta: int
     tx_nome_meta: str
     tx_descricao_meta: str
@@ -109,7 +109,7 @@ class PlanoAcaoParecer(BaseModel, table=True):
     __tablename__ = "plano_acao_parecer"
     
     id_plano_acao: int = Field(primary_key=True)
-    id_parecer: int
+    id_parecer: int = Field(primary_key=True)
     tp_analise_parecer: str
     resultado_parecer: str
     tx_parecer: str
@@ -151,7 +151,7 @@ class ProgramaAcaoOrcamentaria(BaseModel, table=True):
     
     tx_codigo_acao_orcamentaria: str = Field(primary_key=True)
     tx_descricao_acao_orcamentaria: str
-    id_programa: int
+    id_programa: int = Field(primary_key=True)
 
 # Tabela programa_beneficiario
 class ProgramaBeneficiario(BaseModel, table=True):
@@ -160,7 +160,7 @@ class ProgramaBeneficiario(BaseModel, table=True):
     tx_codigo_siorg: str = Field(primary_key=True)
     tx_nome_beneficiario: str
     vl_valor_beneficiario: float
-    id_programa: int
+    id_programa: int = Field(primary_key=True)
 
 # Tabela programacao_financeira
 class ProgramacaoFinanceira(BaseModel, table=True):
