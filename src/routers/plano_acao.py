@@ -86,4 +86,4 @@ async def consulta_plano_acao_ted(
     
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail=e.__repr__())
+                            detail=config.ERROR_MESSAGE_INTERNAL)
