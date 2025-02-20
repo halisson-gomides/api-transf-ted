@@ -18,7 +18,7 @@ config = Settings()
                 response_description="Lista Paginada de Beneficiários dos Programas - TED",
                 response_model=PaginatedProgramaBeneficiarioResponse
                 )
-@cache(ttl=config.CACHE_TTL)
+@cache.early(ttl=config.CACHE_TTL, early_ttl=config.CACHE_EARLY_TTL)
 async def consulta_programa_beneficiario_ted(
     tx_codigo_siorg: Optional[str] = Query(None, description="Código SIORG"),
     tx_nome_beneficiario: Optional[str] = Query(None, description="Nome do Beneficiário"),
@@ -51,6 +51,6 @@ async def consulta_programa_beneficiario_ted(
                                           records_per_page=tamanho_da_pagina)
         return result
     
-    except Exception as e:
+    except Exception as e:        
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail=e.__repr__())
+                            detail=config.ERROR_MESSAGE_INTERNAL)

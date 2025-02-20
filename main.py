@@ -66,7 +66,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.add_middleware(CacheEtagMiddleware)
 app.add_middleware(CacheRequestControlMiddleware)
 
-# setup_cache(settings)
 
 # Incluindo Rotas
 app.include_router(pg_router)
@@ -96,4 +95,4 @@ async def docs_redirect():
     return RedirectResponse(url='/docs')
 
 # Run in terminal
-# uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+# uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-config log_conf.yaml

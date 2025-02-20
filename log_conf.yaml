@@ -1,0 +1,52 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  default:
+    "()": "uvicorn.logging.DefaultFormatter"
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    use_colors: True  # Enable terminal colors
+  access:
+    "()": "uvicorn.logging.AccessFormatter"
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(client_addr)s - %(request_line)s %(status_code)s"
+    use_colors: True  # Enable terminal colors
+  file_formatter:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+handlers:
+  console_default:
+    class: logging.StreamHandler
+    formatter: default
+    stream: ext://sys.stderr
+  console_access:
+    class: logging.StreamHandler
+    formatter: access
+    stream: ext://sys.stdout
+  file_default:
+    class: logging.handlers.RotatingFileHandler
+    formatter: file_formatter
+    filename: logs/api_app.log
+    maxBytes: 62914560  # 60MB
+    backupCount: 5
+    encoding: utf8
+  file_access:
+    class: logging.handlers.RotatingFileHandler
+    formatter: file_formatter
+    filename: logs/api_access.log
+    maxBytes: 62914560  # 60MB
+    backupCount: 5
+    encoding: utf8
+
+loggers:
+  uvicorn.error:
+    level: INFO
+    handlers: [console_default, file_default]
+    propagate: no
+  uvicorn.access:
+    level: INFO
+    handlers: [console_access, file_access]
+    propagate: no
+  root:
+    level: DEBUG
+    handlers: [file_default]
+    propagate: no
