@@ -19,7 +19,7 @@ config = Settings()
                 response_description="Lista Paginada de Programas - TED",
                 response_model=PaginatedProgramaResponse
                 )
-@cache(ttl=config.CACHE_TTL)
+@cache(ttl=config.CACHE_TTL, lock=True)
 async def consulta_programa_ted(
     id_programa: Optional[int] = Query(None, description="Identificador Único do Programa"),
     tx_codigo_programa: Optional[str] = Query(None, description="Código do Programa"),

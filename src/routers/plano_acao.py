@@ -19,7 +19,7 @@ config = Settings()
                 response_description="Lista Paginada de Planos de Ação - TED",
                 response_model=PaginatedPlanoAcaoResponse
                 )
-@cache(ttl=config.CACHE_TTL)
+@cache(ttl=config.CACHE_TTL, lock=True)
 async def consulta_plano_acao_ted(
     id_plano_acao: Optional[int] = Query(None, description="Identificador Único do Plano de Ação"),
     id_programa: Optional[int] = Query(None, description="Identificador Único do Programa"),

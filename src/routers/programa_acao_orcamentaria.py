@@ -18,7 +18,7 @@ config = Settings()
                 response_description="Lista Paginada de Ações Orçamentárias dos Programas - TED",
                 response_model=PaginatedProgramaAcaoOrcamentariaResponse
                 )
-@cache(ttl=config.CACHE_TTL)
+@cache(ttl=config.CACHE_TTL, lock=True)
 async def consulta_programa_acao_orcamentaria_ted(
     tx_codigo_acao_orcamentaria: Optional[str] = Query(None, description="Código da Ação Orçamentária"),
     tx_descricao_acao_orcamentaria: Optional[str] = Query(None, description="Descrição do Programa da Ação Ornamentária"),

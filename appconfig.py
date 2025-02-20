@@ -9,8 +9,7 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str
     CACHE_SERVER_URL: str        
-    CACHE_TTL: str = "30m"  
-    CACHE_EARLY_TTL: str = "28m"  
+    CACHE_TTL: str = "30m"      
     APP_NAME: str
     APP_DESCRIPTION: str
     APP_TAGS: list = [

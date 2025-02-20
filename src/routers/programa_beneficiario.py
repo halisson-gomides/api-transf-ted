@@ -18,7 +18,7 @@ config = Settings()
                 response_description="Lista Paginada de Beneficiários dos Programas - TED",
                 response_model=PaginatedProgramaBeneficiarioResponse
                 )
-@cache.early(ttl=config.CACHE_TTL, early_ttl=config.CACHE_EARLY_TTL)
+@cache(ttl=config.CACHE_TTL, lock=True)
 async def consulta_programa_beneficiario_ted(
     tx_codigo_siorg: Optional[str] = Query(None, description="Código SIORG"),
     tx_nome_beneficiario: Optional[str] = Query(None, description="Nome do Beneficiário"),
