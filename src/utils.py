@@ -2,6 +2,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator
 from sqlmodel import select, func
 from math import ceil
+import asyncio
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi import Depends, HTTPException, status
+import secrets
+from appconfig import Settings
+
+security_stats = HTTPBasic()
+config = Settings()
+
 
 # Dependency to inject db sessions
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
@@ -38,3 +47,22 @@ async def get_paginated_data(query: select, dbsession: AsyncSession, response_sc
             page_number=current_page,
             page_size=min(len(items), total_records)
         )
+
+
+async def reset_minute_counters(request_stats:dict):
+    while True:
+        await asyncio.sleep(60)
+        for stats in request_stats.values():
+            stats["last_minute_count"] = 0
+
+
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security_stats)):
+    correct_username = secrets.compare_digest(credentials.username, config.STATS_USER)
+    correct_password = secrets.compare_digest(credentials.password, config.STATS_PASSWORD)
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username

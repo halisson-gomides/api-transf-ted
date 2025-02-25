@@ -2,15 +2,13 @@ from fastapi import APIRouter, HTTPException, Depends, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select, and_, cast, Date
 from src import models
-from src.utils import get_session, get_paginated_data
+from src.utils import get_session, get_paginated_data, config
 from src.schemas import PaginatedResponseTemplate, PaginatedPlanoAcaoResponse
 from datetime import date
 from typing import Optional
-from appconfig import Settings
 from src.cache import cache
 
 pa_router = APIRouter(tags=["Plano de Ação"])
-config = Settings()
 
 
 @pa_router.get("/plano_acao",

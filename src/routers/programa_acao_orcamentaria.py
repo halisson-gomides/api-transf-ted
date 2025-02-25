@@ -2,14 +2,12 @@ from fastapi import APIRouter, HTTPException, Depends, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select, and_, cast, Date
 from src import models
-from src.utils import get_session, get_paginated_data
+from src.utils import get_session, get_paginated_data, config
 from src.schemas import PaginatedResponseTemplate, PaginatedProgramaAcaoOrcamentariaResponse
 from typing import Optional
-from appconfig import Settings
 from src.cache import cache
 
 pgao_router = APIRouter(tags=["Programa - Ação Orçamentária"])
-config = Settings()
 
 
 @pgao_router.get("/programa_acao_orcamentaria",

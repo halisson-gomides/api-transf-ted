@@ -2,15 +2,13 @@ from fastapi import APIRouter, HTTPException, Depends, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select, and_, cast, Date
 from src import models
-from src.utils import get_session, get_paginated_data
+from src.utils import get_session, get_paginated_data, config
 from src.schemas import PaginatedResponseTemplate, PaginatedPlanoAcaoMetaResponse
 from datetime import date
 from typing import Optional
-from appconfig import Settings
 from src.cache import cache
 
 pam_router = APIRouter(tags=["Plano de Ação - Meta"])
-config = Settings()
 
 
 @pam_router.get("/plano_acao_meta",
@@ -20,7 +18,7 @@ config = Settings()
                 response_model=PaginatedPlanoAcaoMetaResponse
                 )
 @cache(ttl=config.CACHE_TTL, lock=True)
-async def consulta_plano_acao_ted(
+async def consulta_meta_plano_acao_ted(
     id_plano_acao: Optional[int] = Query(None, description="Identificador Único do Plano de Ação"),
     id_meta: Optional[int] = Query(None, description="Identificador Único da Meta"),
     nr_numero_meta: Optional[int] = Query(None, description="Número da Meta do Plano de Ação", ge=0),
@@ -66,4 +64,4 @@ async def consulta_plano_acao_ted(
     
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail=e.__repr__())
+                            detail=config.ERROR_MESSAGE_INTERNAL)
