@@ -31,7 +31,8 @@ from src.routers.plano_acao_analise import paa_router
 from src.routers.plano_acao_parecer import pap_router
 from src.routers.termo_execucao import tde_router
 from src.routers.nota_credito import ndc_router
-# from src.routers.finalidade_especial import fe_router
+from src.routers.evento import evt_router
+
 
 # Configuração do logger
 logging.basicConfig(level=logging.INFO)
@@ -110,7 +111,7 @@ app.include_router(paa_router)
 app.include_router(pap_router)
 app.include_router(tde_router)
 app.include_router(ndc_router)
-# app.include_router(fe_router)
+app.include_router(evt_router)
 
 
 @app.get("/docs", include_in_schema=False)

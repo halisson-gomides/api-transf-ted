@@ -14,7 +14,7 @@ config = Settings()
 
 # Dependency to inject db sessions
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    from main import db
+    from main import db    
     async for session in db.get_db_session():
         yield session
 

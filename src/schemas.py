@@ -28,6 +28,7 @@ class EventoResponse(BaseModel):
     codigo_natureza: Optional[str]
     descricao_natureza: Optional[str]
     nome_esfera_orcamentaria: Optional[str]
+    
 
 class PaginatedEventoResponse(PaginatedResponseTemplate):
     data: List[EventoResponse]

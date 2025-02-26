@@ -19,7 +19,7 @@ class Evento(BaseModel, table=True):
     cd_plano_interno_evento: str
     vl_evento: float
     cd_ug_responsavel_evento: str
-    codigo_natureza: str
+    codigo_natureza: str = Field(primary_key=True)
     descricao_natureza: str
     nome_esfera_orcamentaria: str
 
