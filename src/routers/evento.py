@@ -7,7 +7,6 @@ from src.schemas import PaginatedResponseTemplate, PaginatedEventoResponse
 from datetime import date
 from typing import Optional
 from src.cache import cache
-import asyncio
 
 
 evt_router = APIRouter(tags=["Evento"])

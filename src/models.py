@@ -167,7 +167,7 @@ class ProgramacaoFinanceira(BaseModel, table=True):
     __tablename__ = "programacao_financeira"
     
     id_programacao: int = Field(primary_key=True)
-    id_plano_acao: int
+    id_plano_acao: int = Field(primary_key=True)
     tp_pf_tipo_programacao: str
     tx_minuta_programacao: str
     tx_numero_programacao: str
@@ -197,8 +197,8 @@ class Trf(BaseModel, table=True):
     __tablename__ = "trf"
     
     id_programacao: int = Field(primary_key=True)
-    cd_vinculacao_trf: int
-    cd_fonte_recurso_trf: str
-    cd_categoria_gasto_trf: str
+    cd_vinculacao_trf: int = Field(primary_key=True)
+    cd_fonte_recurso_trf: str = Field(primary_key=True)
+    cd_categoria_gasto_trf: str = Field(primary_key=True)
     vl_valor_trf: float
     cd_situacao_contabil_trf: str

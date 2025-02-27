@@ -18,6 +18,7 @@ import asyncio
 import psutil
 import json
 import time
+import datetime as dt
 
 
 # Importando Rotas
@@ -32,6 +33,8 @@ from src.routers.plano_acao_parecer import pap_router
 from src.routers.termo_execucao import tde_router
 from src.routers.nota_credito import ndc_router
 from src.routers.evento import evt_router
+from src.routers.programacao_financeira import pfi_router
+from src.routers.trf import trf_router
 
 
 # Configuração do logger
@@ -42,6 +45,8 @@ logger = logging.getLogger(__name__)
 db = Database()
 # Initialize a dictionary to store request counts and timings
 request_stats = defaultdict(lambda: {"count": 0, "total_time": 0, "last_minute_count": 0, "up_time": 0})
+monthly_stats = defaultdict(int)
+excluded_stats_paths = ["/", "/stats", "/docs", "/static/icon.jpg", "/openapi.json", "/favicon.ico"]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -93,6 +98,12 @@ async def track_requests(request: Request, call_next):
     
     # Update stats
     path = request.url.path
+    if path in excluded_stats_paths:
+        return response
+    
+    _curr_date = dt.datetime.now(tz=dt.timezone(dt.timedelta(hours=-3)))
+    _curr_month = _curr_date.strftime("%m/%Y")
+    monthly_stats[_curr_month] += 1
     request_stats[path]["count"] += 1
     request_stats[path]["total_time"] += process_time
     request_stats[path]["last_minute_count"] += 1
@@ -112,6 +123,8 @@ app.include_router(pap_router)
 app.include_router(tde_router)
 app.include_router(ndc_router)
 app.include_router(evt_router)
+app.include_router(pfi_router)
+app.include_router(trf_router)
 
 
 @app.get("/docs", include_in_schema=False)
@@ -142,7 +155,40 @@ async def get_stats(username: str = Depends(verify_admin)):
                 <title>API Stats</title>
                 <link rel="icon" type="image/x-icon" href="/static/icon.jpg">
                 <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>                
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>   
+                <style>
+                    table {{
+                        border-collapse: collapse;
+                        width: 100%;
+                    }}
+                    th, td {{
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: left;
+                    }}
+                    th {{
+                        background-color: #f2f2f2;
+                    }}
+                    .chart-container {{
+                        width: 100%;
+                        max-width: 800px;
+                        margin: 20px auto;
+                        padding: 15px;
+                        background-color: #f8f9fa;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    }}
+                    .chart-title {{
+                        text-align: center;
+                        color: #333;
+                        margin-bottom: 15px;
+                        font-family: Arial, sans-serif;
+                    }}
+                    #monthlyRequestsChart {{
+                        border-radius: 5px;
+                        background-color: white;
+                    }}
+                </style>             
             </head>
             <body>
                 <header>
@@ -150,7 +196,14 @@ async def get_stats(username: str = Depends(verify_admin)):
                     <p>Estatísticas relativas aos endpoints do serviço de API</p>
                 </header>
                 <main>
-                <canvas id="requestsChart" width="100px" height="40px"></canvas>
+                <div class="chart-container">
+                    <h5 class="chart-title">Requisições por Minuto</h5>
+                    <canvas id="requestsChart" width="100px" height="40px"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h5 class="chart-title">Requisições Mensais</h5>
+                    <canvas id="monthlyRequestsChart" width="100px" height="40px"></canvas>
+                </div>
                 <h2>Endpoint Stats</h2>
                 <h3>Since: {app_uptime}</h3>
                 <table id="endpointStats">
@@ -165,9 +218,9 @@ async def get_stats(username: str = Depends(verify_admin)):
                     <tbody>
         """
 
-    for path, stats in request_stats.items():
-        if path in ["/", "/stats", "/docs", "/static/icon.jpg", "/openapi.json"]:
-            continue
+    for path, stats in request_stats.items():   
+        if path in excluded_stats_paths:
+            continue     
         avg_time = stats["total_time"] / stats["count"] if stats["count"] > 0 else 0
         html_content += f"""
                 <tr data-path="{path}">
@@ -212,7 +265,7 @@ async def get_stats(username: str = Depends(verify_admin)):
             <script>
                 // Get chart context and create the chart
                 const ctx = document.getElementById('requestsChart').getContext('2d');
-                const chart = new Chart(ctx, {
+                const perMinuteChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: [], // Endpoint names
@@ -225,6 +278,12 @@ async def get_stats(username: str = Depends(verify_admin)):
                         }]
                     },
                     options: {
+                        responsive: true,                        
+                        plugins: {                            
+                            legend: {
+                                display: false // Oculta a legenda se não for necessária
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
@@ -243,6 +302,44 @@ async def get_stats(username: str = Depends(verify_admin)):
                     }
                 });
 
+                const ctxMonthly = document.getElementById('monthlyRequestsChart').getContext('2d');
+                const perMonthChart = new Chart(ctxMonthly, {
+                    type: 'bar',
+                    data: {
+                        labels: [], // Month names
+                        datasets: [{
+                            label: 'Requests per Month',
+                            data: [],  // Total amount Requests per month
+                            backgroundColor: 'rgba(44, 108, 192, 0.5)',
+                            borderColor: 'rgba(44, 108, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,                        
+                        plugins: {                            
+                            legend: {
+                                display: false // Oculta a legenda se não for necessária
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Requests/Month'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Month'
+                                }
+                            }
+                        }
+                    }
+                });
+
                 // Initialize WebSocket connection
                 const socket = new WebSocket("ws://localhost:8000/ws");
 
@@ -252,22 +349,28 @@ async def get_stats(username: str = Depends(verify_admin)):
                     updateStats(data);
                 };
 
-                const excludedPaths = ["/", "/stats", "/docs", "/static/icon.jpg", "/openapi.json"];
-
-                // Function to update the chart with new data
-                function updateChart(data) {
+                // Function to update the per minute chart with new data
+                function updateMinuteChart(data) {
                     // Extract endpoint names and requests per minute
-                    const endpointNames = Object.keys(data.endpoints).filter(path => 
-                        !excludedPaths.includes(path)
-                    );
-                    const requestsPerMinute = endpointNames.map(path => data.endpoints[path].last_minute_count);
+                    const endpointNames = Object.keys(data.endpoints);
+                    const requestsPerMinute = Object.values(data.endpoints).map(stats => stats.last_minute_count);
 
                     // Update chart data
-                    chart.data.labels = endpointNames;
-                    chart.data.datasets[0].data = requestsPerMinute;
+                    perMinuteChart.data.labels = endpointNames;
+                    perMinuteChart.data.datasets[0].data = requestsPerMinute;
 
                     // Refresh the chart
-                    chart.update();
+                    perMinuteChart.update();
+                }
+
+                // Function to update the monthly chart with new data
+                function updateMonthlyChart(data) {
+                    const months = Object.keys(data.monthly).sort();
+                    const requestCounts = months.map(month => data.monthly[month]);
+
+                    perMonthChart.data.labels = months;
+                    perMonthChart.data.datasets[0].data = requestCounts;
+                    perMonthChart.update();
                 }
 
                 // Function to update the stats page with new data
@@ -277,10 +380,7 @@ async def get_stats(username: str = Depends(verify_admin)):
                     const tbody = table.querySelector('tbody'); // Target tbody for dynamic updates
 
                     for (const [path, stats] of Object.entries(data.endpoints)) {
-                         // Verifica se o path deve ser ignorado
-                        if (excludedPaths.includes(path)) {
-                            continue; 
-                        }
+                         
                         let row = tbody.querySelector(`tr[data-path="${path}"]`); // Search within tbody
                         if (!row) {
                             // Create a new row if it doesn't exist
@@ -302,7 +402,8 @@ async def get_stats(username: str = Depends(verify_admin)):
                     document.getElementById("disk-usage").textContent = data.system.disk + "%";
 
                     // Update the chart
-                    updateChart(data);
+                    updateMinuteChart(data);
+                    updateMonthlyChart(data);
                 }
             </script>
         </body>
@@ -324,12 +425,15 @@ async def stats_ws(websocket: WebSocket):
                         "count": stats["count"],
                         "last_minute_count": stats["last_minute_count"],
                         "avg_time": (stats["total_time"] / stats["count"] if stats["count"] > 0 else 0) * 1000
-                    } for path, stats in request_stats.items()
+                    } for path, stats in request_stats.items() if path not in excluded_stats_paths
                 },
                 "system": {
                     "cpu": psutil.cpu_percent(),
                     "memory": psutil.virtual_memory().percent,
                     "disk": psutil.disk_usage('/').percent
+                },
+                "monthly": {
+                    month: count for month, count in monthly_stats.items()
                 }
             }
             await websocket.send_text(json.dumps(stats_data))
