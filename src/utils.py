@@ -11,10 +11,9 @@ from appconfig import Settings
 security_stats = HTTPBasic()
 config = Settings()
 
-
 # Dependency to inject db sessions
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    from main import db    
+    from main import db
     async for session in db.get_db_session():
         yield session
 
@@ -54,6 +53,14 @@ async def reset_minute_counters(request_stats:dict):
         await asyncio.sleep(60)
         for stats in request_stats.values():
             stats["last_minute_count"] = 0
+
+
+async def save_stats(request_stats:dict):
+    import pickle
+    while True:
+        await asyncio.sleep(7200)
+        with open('monthly_request_stats.pkl', 'wb') as f:
+            pickle.dump(request_stats, f, pickle.HIGHEST_PROTOCOL)
 
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security_stats)):

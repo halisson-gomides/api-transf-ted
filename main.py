@@ -13,7 +13,7 @@ from cashews.contrib.fastapi import (
 from collections import defaultdict
 from src.database import Database
 from src.cache import setup_cache
-from src.utils import reset_minute_counters, verify_admin, config
+from src.utils import reset_minute_counters, verify_admin, config, save_stats
 import asyncio
 import psutil
 import json
@@ -59,6 +59,7 @@ async def lifespan(app: FastAPI):
         setup_cache(config)
         # background task to reset the "last minute" counters every 60 seconds.
         reset_task = asyncio.create_task(reset_minute_counters(request_stats))
+	save_task = asyncio.create_task(save_stats(monthly_stats))
         # setting app uptime with timezone offset
         _app_uptime = time.time() - 3*3600
         request_stats["/"]["up_time"] = time.strftime("%d/%m/%Y %H:%M", time.localtime(_app_uptime))
@@ -70,8 +71,10 @@ async def lifespan(app: FastAPI):
     # load after the app has finished
     # Shutdown: Cancel the background task
     reset_task.cancel()
+    save_task.cancel()
     try:
         await reset_task
+	await save_task
     except asyncio.CancelledError:
         pass
     
@@ -278,6 +281,7 @@ async def get_stats(username: str = Depends(verify_admin)):
                         }]
                     },
                     options: {
+                        indexAxis: 'y', // Esta opção inverte os eixos, criando um gráfico horizontal
                         responsive: true,                        
                         plugins: {                            
                             legend: {
@@ -285,14 +289,14 @@ async def get_stats(username: str = Depends(verify_admin)):
                             }
                         },
                         scales: {
-                            y: {
+                            x: {
                                 beginAtZero: true,
                                 title: {
                                     display: true,
                                     text: 'Requests/Minute'
                                 }
                             },
-                            x: {
+                            y: {
                                 title: {
                                     display: true,
                                     text: 'Endpoint'
@@ -365,10 +369,21 @@ async def get_stats(username: str = Depends(verify_admin)):
 
                 // Function to update the monthly chart with new data
                 function updateMonthlyChart(data) {
-                    const months = Object.keys(data.monthly).sort();
+                    const parseDate = (dateStr) => {
+                        const [month, year] = dateStr.split('/');
+                        return new Date(year, parseInt(month) - 1, 1);
+                    };
+
+                    const now = new Date();
+                    const twoYearsAgo = new Date(now.getFullYear() - 2, now.getMonth(), 1);
+
+                    const months = Object.keys(data.monthly)
+                        .filter(monthStr => parseDate(monthStr) >= twoYearsAgo)
+                        .sort((a, b) => parseDate(a) - parseDate(b));
+
                     const requestCounts = months.map(month => data.monthly[month]);
 
-                    perMonthChart.data.labels = months;
+                    perMonthChart.data.labels = months; // Mantém os labels originais (MM/YYYY)
                     perMonthChart.data.datasets[0].data = requestCounts;
                     perMonthChart.update();
                 }
