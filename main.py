@@ -59,7 +59,7 @@ async def lifespan(app: FastAPI):
         setup_cache(config)
         # background task to reset the "last minute" counters every 60 seconds.
         reset_task = asyncio.create_task(reset_minute_counters(request_stats))
-	save_task = asyncio.create_task(save_stats(monthly_stats))
+        save_task = asyncio.create_task(save_stats(monthly_stats))
         # setting app uptime with timezone offset
         _app_uptime = time.time() - 3*3600
         request_stats["/"]["up_time"] = time.strftime("%d/%m/%Y %H:%M", time.localtime(_app_uptime))
@@ -74,7 +74,7 @@ async def lifespan(app: FastAPI):
     save_task.cancel()
     try:
         await reset_task
-	await save_task
+        await save_task
     except asyncio.CancelledError:
         pass
     
