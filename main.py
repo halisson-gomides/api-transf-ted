@@ -46,7 +46,7 @@ db = Database()
 # Initialize a dictionary to store request counts and timings
 request_stats = defaultdict(lambda: {"count": 0, "total_time": 0, "last_minute_count": 0, "up_time": 0})
 monthly_stats = defaultdict(int)
-excluded_stats_paths = ["/", "/stats", "/docs", "/static/icon.jpg", "/openapi.json", "/favicon.ico"]
+excluded_stats_paths = ["/api-ted/", "/api-ted/stats", "/api-ted/docs", "/api-ted/static/icon.jpg", "/api-ted/openapi.json", "/api-ted/favicon.ico"]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -85,8 +85,11 @@ app = FastAPI(lifespan=lifespan,
               description=config.APP_DESCRIPTION,
               openapi_tags=config.APP_TAGS,
               default_response_class=ORJSONResponse,              
-              swagger_ui_parameters={"defaultModelExpandDepth": -1})
+              swagger_ui_parameters={"defaultModelExpandDepth": -1},
+              root_path="/api-ted",
+              openapi_url="/openapi.json")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/api-ted/static", StaticFiles(directory="static"), name="static_prefixed")
 
 # Incluindo Middlewares
 app.add_middleware(CacheEtagMiddleware)
@@ -133,15 +136,15 @@ app.include_router(trf_router)
 @app.get("/docs", include_in_schema=False)
 async def swagger_ui_html():
     return get_swagger_ui_html(
-        openapi_url="/openapi.json",
+        openapi_url="/api-ted/openapi.json",
         title=config.APP_NAME + " - Documentação",        
-        swagger_favicon_url="/static/icon.jpg"
+        swagger_favicon_url="/api-ted/static/icon.jpg"
     )
 
 
 @app.get("/", include_in_schema=False)
 async def docs_redirect():
-    return RedirectResponse(url='/docs')
+    return RedirectResponse(url='/api-ted/docs')
 
 
 @app.get("/stats", include_in_schema=False, response_class=HTMLResponse)
@@ -345,7 +348,11 @@ async def get_stats(username: str = Depends(verify_admin)):
                 });
 
                 // Initialize WebSocket connection
-                const socket = new WebSocket("ws://localhost:8000/ws");
+		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+		const host = window.location.host;
+		const basePath = '/api-ted'; // O prefixo da sua aplicação
+		const socket = new WebSocket(`${protocol}//${host}${basePath}/ws`);
+                //const socket = new WebSocket("ws://localhost:8000/ws");
 
                 // Handle WebSocket messages
                 socket.onmessage = function(event) {

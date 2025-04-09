@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: app-ted
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres-shared:5432/api-transferegov
+      - REDIS_URL=redis://cache-ted:6379/0
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-ted.rule=PathPrefix(`/api-ted`)"
+      - "traefik.http.routers.api-ted.entrypoints=web"
+      - "traefik.http.services.api-ted.loadbalancer.server.port=8000"
+       # Adicione esta configuração para WebSockets
+      - "traefik.http.middlewares.api-ted-ws.headers.customRequestHeaders.X-Forwarded-Proto=ws"
+      - "traefik.http.routers.api-ted-ws.rule=PathPrefix(`/api-ted/ws`)"
+      - "traefik.http.routers.api-ted-ws.entrypoints=web"
+      - "traefik.http.routers.api-ted-ws.service=api-ted"
+      - "traefik.http.routers.api-ted-ws.middlewares=api-ted-ws"
+
+  redis:
+    container_name: cache-ted
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
+
+networks:
+  default:
+    name: web-apps
+    external: true
