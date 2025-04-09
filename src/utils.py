@@ -73,3 +73,35 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security_stats)):
             headers={"WWW-Authenticate": "Basic"},
         )
     return credentials.username
+
+
+async def get_allowed_stats_paths(root_path:str, logger, wait_time=10):
+    """
+    Function to get allowed paths from OpenAPI schema
+    """
+    import httpx
+    import socket
+    try:
+        # Wait a bit for the server to start
+        await asyncio.sleep(wait_time)
+        # Dynamically determine the base URL;        
+        hostname = socket.gethostbyname(socket.gethostname())
+        base_url = f"http://{hostname}:8000"
+        
+        openapi_url = f"{base_url}{root_path}/openapi.json"
+        logger.info(f"Fetching OpenAPI schema from: {openapi_url}")
+        
+        # Set a timeout for the request
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(openapi_url)
+            paths = list(response.json()['paths'].keys())
+            logger.info(f"Retrieved {len(paths)} paths from OpenAPI schema")
+            fmt_paths = [root_path + p for p in paths]
+            return fmt_paths
+    except httpx.TimeoutException:
+        logger.error("Timeout while getting OpenAPI paths")
+        return []
+    except Exception as e:
+        logger.error(f"Error getting OpenAPI paths: {e.__repr__()}")
+        # Return a minimal set of paths as fallback
+        return []
