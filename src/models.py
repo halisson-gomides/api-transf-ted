@@ -121,29 +121,29 @@ class Programa(BaseModel, table=True):
     __tablename__ = "programa"
     
     id_programa: int = Field(primary_key=True)
-    tx_codigo_programa: str
-    aa_ano_programa: int
-    tx_situacao_programa: str
-    tx_nome_programa: str
-    sigla_unidade_descentralizadora: str
-    unidade_descentralizadora: str
-    sigla_unidade_responsavel_acompanhamento: str
-    unidade_responsavel_acompanhamento: str
-    tx_nome_institucional_programa: str
-    tx_objetivo_programa: str
-    tx_descricao_programa: str
-    in_grupo_investimento_obra: bool
-    in_grupo_investimento_servico: bool
-    in_grupo_investimento_equipamento: bool
-    in_autoriza_subdescentralizacao_outro: str
-    in_autoriza_realizacao_despesas: str
-    in_autoriza_execucao_creditos_descentralizada: str
-    in_beneficiario_especifico: bool
-    dt_recebimento_plano_beneficiario_inicio: date
-    dt_recebimento_plano_beneficiario_fim: date
-    in_chamamento_publico: bool
-    dt_recebimento_plano_chamamento_inicio: date
-    dt_recebimento_plano_chamamento_fim: date
+    tx_codigo_programa: str | None = None
+    aa_ano_programa: int | None = None
+    tx_situacao_programa: str | None = None
+    tx_nome_programa: str | None = None
+    sigla_unidade_descentralizadora: str | None = None
+    unidade_descentralizadora: str | None = None
+    sigla_unidade_responsavel_acompanhamento: str | None = None
+    unidade_responsavel_acompanhamento: str | None = None
+    tx_nome_institucional_programa: str | None = None
+    tx_objetivo_programa: str | None = None
+    tx_descricao_programa: str | None = None
+    in_grupo_investimento_obra: bool | None = None
+    in_grupo_investimento_servico: bool | None = None
+    in_grupo_investimento_equipamento: bool | None = None
+    in_autoriza_subdescentralizacao_outro: str | None = None
+    in_autoriza_realizacao_despesas: str | None = None
+    in_autoriza_execucao_creditos_descentralizada: str | None = None
+    in_beneficiario_especifico: bool | None = None
+    dt_recebimento_plano_beneficiario_inicio: date | None = None
+    dt_recebimento_plano_beneficiario_fim: date | None = None
+    in_chamamento_publico: bool | None = None
+    dt_recebimento_plano_chamamento_inicio: date | None = None
+    dt_recebimento_plano_chamamento_fim: date | None = None
 
 # Tabela programa_acao_orcamentaria
 class ProgramaAcaoOrcamentaria(BaseModel, table=True):
