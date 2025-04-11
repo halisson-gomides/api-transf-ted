@@ -45,24 +45,24 @@ class PlanoAcao(BaseModel, table=True):
     
     id_plano_acao: int = Field(primary_key=True)
     id_programa: int = Field(foreign_key=f"{db_schema}.programa.id_programa", primary_key=True)
-    sigla_unidade_descentralizada: str
-    unidade_descentralizada: str
-    sigla_unidade_responsavel_execucao: str
-    unidade_responsavel_execucao: str
-    vl_total_plano_acao: float
-    dt_inicio_vigencia: date
-    dt_fim_vigencia: date
-    tx_objeto_plano_acao: str
-    tx_justificativa_plano_acao: str
-    in_forma_execucao_direta: bool
-    in_forma_execucao_particulares: bool
-    in_forma_execucao_descentralizada: bool
-    tx_situacao_plano_acao: str
-    aa_ano_plano_acao: int
-    vl_beneficiario_especifico: float
-    vl_chamamento_publico: float
-    sq_instrumento: str
-    aa_instrumento: int
+    sigla_unidade_descentralizada: str | None = None
+    unidade_descentralizada: str | None = None
+    sigla_unidade_responsavel_execucao: str | None = None
+    unidade_responsavel_execucao: str | None = None
+    vl_total_plano_acao: float | None = None
+    dt_inicio_vigencia: date | None = None
+    dt_fim_vigencia: date | None = None
+    tx_objeto_plano_acao: str | None = None
+    tx_justificativa_plano_acao: str | None = None
+    in_forma_execucao_direta: bool | None = None
+    in_forma_execucao_particulares: bool | None = None
+    in_forma_execucao_descentralizada: bool | None = None
+    tx_situacao_plano_acao: str | None = None
+    aa_ano_plano_acao: int | None = None
+    vl_beneficiario_especifico: float | None = None
+    vl_chamamento_publico: float | None = None
+    sq_instrumento: str | None = None
+    aa_instrumento: int | None = None
 
 # Tabela plano_acao_analise
 class PlanoAcaoAnalise(BaseModel, table=True):
