@@ -68,53 +68,53 @@ class PlanoAcao(BaseModel, table=True):
 class PlanoAcaoAnalise(BaseModel, table=True):
     __tablename__ = "plano_acao_analise"
     
-    id_plano_acao: int = Field(primary_key=True)
+    id_plano_acao: int = Field(foreign_key=f"{db_schema}.plano_acao.id_plano_acao")
     id_analise: int = Field(primary_key=True)
-    tx_justificativa_analise: str
-    resultado_analise: str
-    tx_situacao_analise: str
+    tx_justificativa_analise: str | None = None
+    resultado_analise: str | None = None
+    tx_situacao_analise: str | None = None
 
 # Tabela plano_acao_etapa
 class PlanoAcaoEtapa(BaseModel, table=True):
     __tablename__ = "plano_acao_etapa"
     
     id_etapa: int = Field(primary_key=True)
-    id_meta: int = Field(primary_key=True)
-    nr_numero_etapa: int
-    tx_nome_etapa: str
-    tx_descricao_etapa: str
-    nr_quantidade_etapa: int
-    vl_valor_unitario_etapa: float
-    dt_inicio_vigencia_etapa: date
-    dt_fim_vigencia_etapa: date
-    unidade_medida_etapa: str
+    id_meta: int = Field(foreign_key=f"{db_schema}.plano_acao_meta.id_meta")
+    nr_numero_etapa: int | None = None
+    tx_nome_etapa: str | None = None
+    tx_descricao_etapa: str | None = None
+    nr_quantidade_etapa: int | None = None
+    vl_valor_unitario_etapa: float | None = None
+    dt_inicio_vigencia_etapa: date | None = None
+    dt_fim_vigencia_etapa: date | None = None
+    unidade_medida_etapa: str | None = None
 
 # Tabela plano_acao_meta
 class PlanoAcaoMeta(BaseModel, table=True):
     __tablename__ = "plano_acao_meta"
     
-    id_plano_acao: int = Field(primary_key=True)
+    id_plano_acao: int = Field(foreign_key=f"{db_schema}.plano_acao.id_plano_acao")
     id_meta: int = Field(primary_key=True)
-    nr_numero_meta: int
-    tx_nome_meta: str
-    tx_descricao_meta: str
-    tp_unidade_meta: str
-    nr_quantidade_meta: int
-    vl_valor_unitario_meta: float
-    dt_inicio_vigencia_meta: date
-    dt_fim_vigencia_meta: date
+    nr_numero_meta: int | None = None
+    tx_nome_meta: str | None = None
+    tx_descricao_meta: str | None = None
+    tp_unidade_meta: str | None = None
+    nr_quantidade_meta: int | None = None
+    vl_valor_unitario_meta: float | None = None
+    dt_inicio_vigencia_meta: date | None = None
+    dt_fim_vigencia_meta: date | None = None
 
 # Tabela plano_acao_parecer
 class PlanoAcaoParecer(BaseModel, table=True):
     __tablename__ = "plano_acao_parecer"
     
-    id_plano_acao: int = Field(primary_key=True)
+    id_plano_acao: int = Field(foreign_key=f"{db_schema}.plano_acao.id_plano_acao")
     id_parecer: int = Field(primary_key=True)
-    tp_analise_parecer: str
-    resultado_parecer: str
-    tx_parecer: str
-    plano_acao_hist_fk: int
-    dt_data_parecer: datetime
+    tp_analise_parecer: str | None = None
+    resultado_parecer: str | None = None
+    tx_parecer: str | None = None
+    plano_acao_hist_fk: int | None = None
+    dt_data_parecer: datetime | None = None
 
 # Tabela programa
 class Programa(BaseModel, table=True):
@@ -150,8 +150,8 @@ class ProgramaAcaoOrcamentaria(BaseModel, table=True):
     __tablename__ = "programa_acao_orcamentaria"
     
     tx_codigo_acao_orcamentaria: str = Field(primary_key=True)
-    tx_descricao_acao_orcamentaria: str
-    id_programa: int = Field(primary_key=True)
+    tx_descricao_acao_orcamentaria: str | None = None
+    id_programa: int = Field(foreign_key=f"{db_schema}.programa.id_programa")
 
 # Tabela programa_beneficiario
 class ProgramaBeneficiario(BaseModel, table=True):
