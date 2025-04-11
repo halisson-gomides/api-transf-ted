@@ -8,20 +8,6 @@ db_schema = 'api_transferegov_ted'
 class BaseModel(SQLModel, table=False):
     __table_args__ = {"schema": db_schema}
 
-# Tabela evento
-class Evento(BaseModel, table=True):
-    __tablename__ = "evento"
-    
-    id_nota: int = Field(primary_key=True)
-    cd_evento: str | None = None
-    cd_ptres_evento: str | None = None
-    cd_fonte_recurso_evento: str | None = None
-    cd_plano_interno_evento: str | None = None
-    vl_evento: float | None = None
-    cd_ug_responsavel_evento: str | None = None
-    codigo_natureza: str = Field(primary_key=True)
-    descricao_natureza: str | None = None
-    nome_esfera_orcamentaria: str | None = None
 
 # Tabela nota_credito
 class NotaCredito(BaseModel, table=True):
@@ -38,6 +24,23 @@ class NotaCredito(BaseModel, table=True):
     cd_ug_emitente_nota: str | None = None
     cd_ug_favorecida_nota: str | None = None
     tx_observacao_nota: str | None = None
+
+
+# Tabela evento
+class Evento(BaseModel, table=True):
+    __tablename__ = "evento"
+    
+    id_nota: int = Field(foreign_key=f"{db_schema}.nota_credito.id_nota", primary_key=True)
+    cd_evento: str | None = None
+    cd_ptres_evento: str | None = None
+    cd_fonte_recurso_evento: str | None = None
+    cd_plano_interno_evento: str | None = None
+    vl_evento: float | None = None
+    cd_ug_responsavel_evento: str | None = None
+    codigo_natureza: str = Field(primary_key=True)
+    descricao_natureza: str | None = None
+    nome_esfera_orcamentaria: str | None = None
+    
 
 # Tabela plano_acao
 class PlanoAcao(BaseModel, table=True):
@@ -64,6 +67,7 @@ class PlanoAcao(BaseModel, table=True):
     sq_instrumento: str | None = None
     aa_instrumento: int | None = None
 
+
 # Tabela plano_acao_analise
 class PlanoAcaoAnalise(BaseModel, table=True):
     __tablename__ = "plano_acao_analise"
@@ -73,6 +77,7 @@ class PlanoAcaoAnalise(BaseModel, table=True):
     tx_justificativa_analise: str | None = None
     resultado_analise: str | None = None
     tx_situacao_analise: str | None = None
+
 
 # Tabela plano_acao_etapa
 class PlanoAcaoEtapa(BaseModel, table=True):
@@ -89,6 +94,7 @@ class PlanoAcaoEtapa(BaseModel, table=True):
     dt_fim_vigencia_etapa: date | None = None
     unidade_medida_etapa: str | None = None
 
+
 # Tabela plano_acao_meta
 class PlanoAcaoMeta(BaseModel, table=True):
     __tablename__ = "plano_acao_meta"
@@ -104,6 +110,7 @@ class PlanoAcaoMeta(BaseModel, table=True):
     dt_inicio_vigencia_meta: date | None = None
     dt_fim_vigencia_meta: date | None = None
 
+
 # Tabela plano_acao_parecer
 class PlanoAcaoParecer(BaseModel, table=True):
     __tablename__ = "plano_acao_parecer"
@@ -115,6 +122,7 @@ class PlanoAcaoParecer(BaseModel, table=True):
     tx_parecer: str | None = None
     plano_acao_hist_fk: int | None = None
     dt_data_parecer: datetime | None = None
+
 
 # Tabela programa
 class Programa(BaseModel, table=True):
@@ -145,6 +153,7 @@ class Programa(BaseModel, table=True):
     dt_recebimento_plano_chamamento_inicio: date | None = None
     dt_recebimento_plano_chamamento_fim: date | None = None
 
+
 # Tabela programa_acao_orcamentaria
 class ProgramaAcaoOrcamentaria(BaseModel, table=True):
     __tablename__ = "programa_acao_orcamentaria"
@@ -152,6 +161,7 @@ class ProgramaAcaoOrcamentaria(BaseModel, table=True):
     tx_codigo_acao_orcamentaria: str = Field(primary_key=True)
     tx_descricao_acao_orcamentaria: str | None = None
     id_programa: int = Field(foreign_key=f"{db_schema}.programa.id_programa")
+
 
 # Tabela programa_beneficiario
 class ProgramaBeneficiario(BaseModel, table=True):
@@ -161,6 +171,7 @@ class ProgramaBeneficiario(BaseModel, table=True):
     tx_nome_beneficiario: str | None = None
     vl_valor_beneficiario: float | None = None
     id_programa: int = Field(foreign_key=f"{db_schema}.programa.id_programa")
+
 
 # Tabela programacao_financeira
 class ProgramacaoFinanceira(BaseModel, table=True):
@@ -177,6 +188,7 @@ class ProgramacaoFinanceira(BaseModel, table=True):
     ug_favorecida_programacao: str | None = None
     dh_recebimento_programacao: datetime | None = None
 
+
 # Tabela termo_execucao
 class TermoExecucao(BaseModel, table=True):
     __tablename__ = "termo_execucao"
@@ -191,6 +203,7 @@ class TermoExecucao(BaseModel, table=True):
     tx_numero_ns_termo: str | None = None
     dt_recebimento_termo: datetime | None = None
     dt_efetivacao_termo: datetime | None = None
+
 
 # Tabela trf
 class Trf(BaseModel, table=True):
