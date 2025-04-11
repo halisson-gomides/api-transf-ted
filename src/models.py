@@ -158,47 +158,47 @@ class ProgramaBeneficiario(BaseModel, table=True):
     __tablename__ = "programa_beneficiario"
     
     tx_codigo_siorg: str = Field(primary_key=True)
-    tx_nome_beneficiario: str
-    vl_valor_beneficiario: float
-    id_programa: int = Field(primary_key=True)
+    tx_nome_beneficiario: str | None = None
+    vl_valor_beneficiario: float | None = None
+    id_programa: int = Field(foreign_key=f"{db_schema}.programa.id_programa")
 
 # Tabela programacao_financeira
 class ProgramacaoFinanceira(BaseModel, table=True):
     __tablename__ = "programacao_financeira"
     
     id_programacao: int = Field(primary_key=True)
-    id_plano_acao: int = Field(primary_key=True)
-    tp_pf_tipo_programacao: str
-    tx_minuta_programacao: str
-    tx_numero_programacao: str
-    tx_situacao_programacao: str
-    tx_observacao_programacao: str
-    ug_emitente_programacao: str
-    ug_favorecida_programacao: str
-    dh_recebimento_programacao: datetime
+    id_plano_acao: int = Field(foreign_key=f"{db_schema}.plano_acao.id_plano_acao")
+    tp_pf_tipo_programacao: str | None = None
+    tx_minuta_programacao: str | None = None
+    tx_numero_programacao: str | None = None
+    tx_situacao_programacao: str | None = None
+    tx_observacao_programacao: str | None = None
+    ug_emitente_programacao: str | None = None
+    ug_favorecida_programacao: str | None = None
+    dh_recebimento_programacao: datetime | None = None
 
 # Tabela termo_execucao
 class TermoExecucao(BaseModel, table=True):
     __tablename__ = "termo_execucao"
     
     id_termo: int = Field(primary_key=True)
-    id_plano_acao: int
-    tx_situacao_termo: str
-    tx_num_processo_sei: str
-    dt_assinatura_termo: date
-    dt_divulgacao_termo: date
-    in_minuta_padrao: bool
-    tx_numero_ns_termo: str
-    dt_recebimento_termo: datetime
-    dt_efetivacao_termo: datetime
+    id_plano_acao: int = Field(foreign_key=f"{db_schema}.plano_acao.id_plano_acao")
+    tx_situacao_termo: str | None = None
+    tx_num_processo_sei: str | None = None
+    dt_assinatura_termo: date | None = None
+    dt_divulgacao_termo: date | None = None
+    in_minuta_padrao: bool | None = None
+    tx_numero_ns_termo: str | None = None
+    dt_recebimento_termo: datetime | None = None
+    dt_efetivacao_termo: datetime | None = None
 
 # Tabela trf
 class Trf(BaseModel, table=True):
     __tablename__ = "trf"
     
-    id_programacao: int = Field(primary_key=True)
+    id_programacao: int = Field(foreign_key=f"{db_schema}.programacao_financeira.id_programacao")
     cd_vinculacao_trf: int = Field(primary_key=True)
     cd_fonte_recurso_trf: str = Field(primary_key=True)
     cd_categoria_gasto_trf: str = Field(primary_key=True)
-    vl_valor_trf: float
-    cd_situacao_contabil_trf: str
+    vl_valor_trf: float | None = None
+    cd_situacao_contabil_trf: str | None = None
