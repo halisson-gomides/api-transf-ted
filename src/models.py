@@ -13,31 +13,31 @@ class Evento(BaseModel, table=True):
     __tablename__ = "evento"
     
     id_nota: int = Field(primary_key=True)
-    cd_evento: str
-    cd_ptres_evento: str
-    cd_fonte_recurso_evento: str
-    cd_plano_interno_evento: str
-    vl_evento: float
-    cd_ug_responsavel_evento: str
+    cd_evento: str | None = None
+    cd_ptres_evento: str | None = None
+    cd_fonte_recurso_evento: str | None = None
+    cd_plano_interno_evento: str | None = None
+    vl_evento: float | None = None
+    cd_ug_responsavel_evento: str | None = None
     codigo_natureza: str = Field(primary_key=True)
-    descricao_natureza: str
-    nome_esfera_orcamentaria: str
+    descricao_natureza: str | None = None
+    nome_esfera_orcamentaria: str | None = None
 
 # Tabela nota_credito
 class NotaCredito(BaseModel, table=True):
     __tablename__ = "nota_credito"
     
     id_nota: int = Field(primary_key=True)
-    id_plano_acao: int
-    tx_minuta_nota: str
-    tx_numero_nota: str
-    dt_emissao_nota: datetime
-    cd_gestao_emitente_nota: str
-    cd_gestao_favorecida_nota: str
-    tx_situacao_nota: str
-    cd_ug_emitente_nota: str
-    cd_ug_favorecida_nota: str
-    tx_observacao_nota: str
+    id_plano_acao: int = Field(foreign_key=f"{db_schema}.plano_acao.id_plano_acao")
+    tx_minuta_nota: str | None = None
+    tx_numero_nota: str | None = None
+    dt_emissao_nota: datetime | None = None
+    cd_gestao_emitente_nota: str | None = None
+    cd_gestao_favorecida_nota: str | None = None
+    tx_situacao_nota: str | None = None
+    cd_ug_emitente_nota: str | None = None
+    cd_ug_favorecida_nota: str | None = None
+    tx_observacao_nota: str | None = None
 
 # Tabela plano_acao
 class PlanoAcao(BaseModel, table=True):
