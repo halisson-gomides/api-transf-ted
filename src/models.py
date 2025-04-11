@@ -44,7 +44,7 @@ class PlanoAcao(BaseModel, table=True):
     __tablename__ = "plano_acao"
     
     id_plano_acao: int = Field(primary_key=True)
-    id_programa: int = Field(foreign_key=f"{db_schema}.programa.id_programa", primary_key=True)
+    id_programa: int = Field(foreign_key=f"{db_schema}.programa.id_programa")
     sigla_unidade_descentralizada: str | None = None
     unidade_descentralizada: str | None = None
     sigla_unidade_responsavel_execucao: str | None = None
